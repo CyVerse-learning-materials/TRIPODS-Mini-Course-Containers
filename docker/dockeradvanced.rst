@@ -28,8 +28,8 @@ Docker offers three different ways to mount data into a container from the Docke
 **Bind mounts:** When you use a bind mount, a file or directory on the host machine is mounted into a container.
 
 .. image:: ../img/bind_mount.png
-  :width: 500
-  :height: 450
+  :width: 400
+  :height: 350
   :scale: 100%
   :align: center
 
@@ -136,7 +136,7 @@ After you grant access to your code repository, the system returns you to Docker
 
 .. image:: ../img/auto_build-1.png
   :width: 550
-  :height: 500
+  :height: 400
   :scale: 100%
   :align: center
 
@@ -166,7 +166,7 @@ Let's create an automatic build for our ``astroML`` using the instructions below
 
 .. image:: ../img/create_repo.png
   :width: 550
-  :height: 500
+  :height: 200
   :scale: 100%
   :align: center
 
@@ -174,7 +174,7 @@ Let's create an automatic build for our ``astroML`` using the instructions below
 
 .. image:: ../img/create_repo2.png
   :width: 550
-  :height: 500
+  :height: 100
   :scale: 100%
   :align: center
 
@@ -195,7 +195,7 @@ Let's create an automatic build for our ``astroML`` using the instructions below
 
 .. image:: ../img/auto_build-2.png
   :width: 550
-  :height: 500
+  :height: 200
   :scale: 100%
   :align: center
 
@@ -207,7 +207,7 @@ Let's create an automatic build for our ``astroML`` using the instructions below
 
 .. image:: ../img/auto_build-2.1.png
   :width: 550
-  :height: 500
+  :height: 200
   :scale: 100%
   :align: center
 
@@ -249,7 +249,7 @@ Press ``Trigger`` button and finally click ``Save Changes``.
 
 .. image:: ../img/auto_build-6.png
   :width: 550
-  :height: 500
+  :height: 200
   :scale: 100%
   :align: center
 
@@ -265,7 +265,7 @@ You may have to manually refresh the page and your build may take several minute
 
 .. image:: ../img/auto_build-7.png
   :width: 550
-  :height: 500
+  :height: 200
   :scale: 100%
   :align: center
 
@@ -344,17 +344,33 @@ The last line is a URL that we need to copy and paste into our browser to access
 
 Once you’ve done that you should be greeted by your very own containerised Jupyter service!
 
-|jn_login|
+.. image:: ../img/jn_login.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
 
 To create your first notebook, drill into the work directory and then click on the ‘New’ button on the right hand side and choose ‘Python 3’ to create a new Python 3 based Notebook. 
 
-|jn_login2|
+.. image:: ../img/jn_login2.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
 
 Now you can write your python code. Here is an example
 
-|jn_login3|
+.. image:: ../img/jn_login3.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
 
-|jn_login3.5|
+.. image:: ../img/jn_login3.5.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
 
 To shut down the container once you’re done working, simply hit Ctrl-C in the terminal/command prompt. Your work will all be saved on your actual machine in the path we set in our Docker compose file. And there you have it — a quick and easy way to start using Jupyter notebooks with the magic of Docker.
 
@@ -362,7 +378,11 @@ To shut down the container once you’re done working, simply hit Ctrl-C in the 
 
 Next, we will see a Docker image from Rocker which will allow us to run RStudio inside the container and has many useful R packages already installed.
 
-|rstudio_ss|
+.. image:: ../img/rstudio_ss.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
 
 .. code-block:: bash
 
@@ -374,11 +394,41 @@ Next, we will see a Docker image from Rocker which will allow us to run RStudio 
 
 The command above will lead RStudio-Server to launch invisibly. To connect to it, open a browser and enter http://localhost:8787, or <ipaddress>:8787 on cloud 
 
-|rstudio_login2|
+.. image:: ../img/rstudio_login2.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
 
 Enter ``rstudio`` as username and password. Finally Rstudio shows up and you can run your R command from here
 
-|rstudio_login|
+.. image:: ../img/rstudio_login.png
+  :width: 550
+  :height: 200
+  :scale: 100%
+  :align: center
+
+But as you can see if you want to save your work, you need to mount your local directory inside docker container. This is how you do it..
+
+.. code-block :: bash
+
+	docker run --rm -d -v ${PWD}:/data -p 8787:8787 rocker/rstudio:3.4.3
+
+The command above will lead RStudio-Server to launch invisibly. To connect to it, open a browser and enter http://localhost:8787, or <ipaddress>:8787 on cloud
+
+In order to see the directory that is currently mounted on inside the container, click `...` in the right hand down window of Rstudio which open up a dialog box. Now enter `/data` which is the location of mounted directory inside the container
+
+.. image:: ../img/rstudio_mount1.png
+  :width: 550
+  :height: 100
+  :scale: 100%
+  :align: center
+
+.. image:: ../img/rstudio_mount2.png
+  :width: 550
+  :height: 100
+  :scale: 100%
+  :align: center
 
 3. Machine learning using Docker
 
@@ -412,14 +462,16 @@ You can find the above code in this `github repo <https://github.com/upendrak/sc
 	Y = ['apple', 'apple', 'orange', 'orange', 'apple', 'apple', 'orange', 'orange', 'orange', 'apple', 'apple']
 
 	#classifier - DecisionTreeClassifier
-	clf_tree = tree.DecisionTreeClassifier();
-	clf_tree = clf_tree.fit(X,Y);
+	clf_tree = tree.DecisionTreeClassifier()
+	clf_tree = clf_tree.fit(X,Y)
 
 	#test_data
-	test_data = [[190,70,42],[172,64,39],[182,80,42]];
+	test_data = [[190,70,42],[172,64,39],[182,80,42]]
 
 	#prediction
 	prediction_tree = clf_tree.predict(test_data);
+	print("Prediction of DecisionTreeClassifier:")
+	print(prediction_tree)
 
 	# Write output to a file
 	with open("output.txt", 'w') as fh_out:
@@ -438,19 +490,112 @@ You can find the above code in this `github repo <https://github.com/upendrak/sc
 	# Set the working directory to /app
 	WORKDIR /app
 
-	# Copy the current directory contents into the container at /app
-	ADD . /app
+	# Copy requirements file into the container at /app
+	COPY requirements.txt .
 
 	# Install any needed packages specified in requirements.txt
 	RUN pip install -r requirements.txt
 
-	# Define environment variable
-	ENV NAME World
+	# Copy the app.py script into the container at /app
+	COPY app.py .
+
+	# Reset the working directory to /
+	WORKDIR /
 
 	# Run app.py when the container launches
-	CMD ["python", "app.py"]
+	CMD ["python", "/app/app.py"]
 
-5. Create a Docker compose YAML file
+
+5. Build the image
+
+.. code-block :: bash
+
+$ docker build -t python/scikittree:1.0 .
+	Sending build context to Docker daemon   68.1kB
+	Step 1/9 : FROM python:3.6-slim
+	 ---> d6f22b3a2b87
+	Step 2/9 : MAINTAINER Upendra Devisetty <upendra@cyverse.org>
+	 ---> Using cache
+	 ---> 8d982fba864a
+	Step 3/9 : LABEL Description "This Dockerfile is used to build a scikit-learn’s decision tree image"
+	 ---> Using cache
+	 ---> ae0dccaf9b93
+	Step 4/9 : WORKDIR /app
+	 ---> Using cache
+	 ---> b46cacae725d
+	Step 5/9 : COPY requirements.txt .
+	 ---> b2dd40134ab5
+	Step 6/9 : RUN pip install -r requirements.txt
+	 ---> Running in f4b13ba6b9e7
+	Collecting numpy (from -r requirements.txt (line 1))
+	  Downloading https://files.pythonhosted.org/packages/71/90/ca61e203e0080a8cef7ac21eca199829fa8d997f7c4da3e985b49d0a107d/numpy-1.14.3-cp36-cp36m-manylinux1_x86_64.whl (12.2MB)
+	Collecting scipy (from -r requirements.txt (line 2))
+	  Downloading https://files.pythonhosted.org/packages/a8/0b/f163da98d3a01b3e0ef1cab8dd2123c34aee2bafbb1c5bffa354cc8a1730/scipy-1.1.0-cp36-cp36m-manylinux1_x86_64.whl (31.2MB)
+	Collecting scikit-learn (from -r requirements.txt (line 3))
+	  Downloading https://files.pythonhosted.org/packages/3d/2d/9fbc7baa5f44bc9e88ffb7ed32721b879bfa416573e85031e16f52569bc9/scikit_learn-0.19.1-cp36-cp36m-manylinux1_x86_64.whl (12.4MB)
+	Installing collected packages: numpy, scipy, scikit-learn
+	Successfully installed numpy-1.14.3 scikit-learn-0.19.1 scipy-1.1.0
+	Removing intermediate container f4b13ba6b9e7
+	 ---> f01bf5fab16e
+	Step 7/9 : COPY app.py .
+	 ---> 73ed881614c7
+	Step 8/9 : WORKDIR /
+	Removing intermediate container 5683c6b8cf9c
+	 ---> 3bd0c31d2945
+	Step 9/9 : CMD ["python", "/app/app.py"]
+	 ---> Running in fadb6d8cbaa3
+	Removing intermediate container fadb6d8cbaa3
+	 ---> 72b353df7246
+	Successfully built 72b353df7246
+	Successfully tagged python/scikittree:1.0
+
+6. Now run the container to predict the fruit given a new set of fruit metrics
+
+.. code-block :: bash
+
+	$ docker run --rm -v ${PWD}:/data -w /data python/scikittree:1.0
+	Prediction of DecisionTreeClassifier:
+	['apple' 'orange' 'apple'
+
+You will find the ouput file in the ``scikit_docker`` folder with the following contents
+
+.. code-block:: bash
+
+	$ cat output.txt 
+	Prediction of DecisionTreeClassifier:['apple' 'orange' 'apple']
+
+
+7. Suppose you want to modify this container to install Jupyter-notebook because you want to run the script interactively. Then what you need to do is to simply replace the `python:3.6-slim` with `jupyter/minimal-notebook`. Build the container as before but run it like this to start the container with Jupyter-notebook
+
+.. code-block :: bash
+
+	$ docker build -t python/scikittree:2.0 .
+
+.. code-block :: bash
+
+	$ docker run --rm -p 8888:8888 -v ${PWD}:/work -w /work python/scikittree:2.0
+	/usr/local/bin/start-notebook.sh: ignoring /usr/local/bin/start-notebook.d/*
+
+	Container must be run with group root to update passwd file
+	Executing the command: jupyter notebook
+	[I 17:58:28.775 NotebookApp] Writing notebook server cookie secret to /home/jovyan/.local/share/jupyter/runtime/notebook_cookie_secret
+	[W 17:58:28.950 NotebookApp] WARNING: The notebook server is listening on all IP addresses and not using encryption. This is not recommended.
+	[I 17:58:28.977 NotebookApp] JupyterLab beta preview extension loaded from /opt/conda/lib/python3.6/site-packages/jupyterlab
+	[I 17:58:28.977 NotebookApp] JupyterLab application directory is /opt/conda/share/jupyter/lab
+	[I 17:58:28.984 NotebookApp] Serving notebooks from local directory: /work
+	[I 17:58:28.985 NotebookApp] 0 active kernels
+	[I 17:58:28.985 NotebookApp] The Jupyter Notebook is running at:
+	[I 17:58:28.985 NotebookApp] http://[all ip addresses on your system]:8888/?token=2dbe061f0f3815dae48e4ce0f2a7c5a581ba25fd4a28bf4d
+	[I 17:58:28.985 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+	[C 17:58:28.989 NotebookApp] 
+	    
+	    Copy/paste this URL into your browser when you connect for the first time,
+	    to login with a token:
+	        http://localhost:8888/?token=2dbe061f0f3815dae48e4ce0f2a7c5a581ba25fd4a28bf4d
+
+# Optional
+
+1. Create a Docker compose YAML file
 
 .. code-block:: bash
 
@@ -461,71 +606,64 @@ You can find the above code in this `github repo <https://github.com/upendrak/sc
 	        volumes:
 	            - .:/app
 
-5. Now Build and Run the Docker image using `docker-compose up` command to predict the fruit given a new set of fruit metrics
+2. Now Build and Run the Docker image using `docker-compose up` command to predict the fruit given a new set of fruit metrics
 
 .. code-block:: bash
 
-	$ docker-compose up 
+	$ docker-compose up
+	Creating network "scikit_docker_default" with the default driver
 	Building datasci
-	Step 1/8 : FROM python:3.6-slim
-	 ---> dc41c0491c65
-	Step 2/8 : MAINTAINER Upendra Devisetty <upendra@cyverse.org>
-	 ---> Running in 95a4da823100
-	 ---> 7c4d5b78bb0a
-	Removing intermediate container 95a4da823100
-	Step 3/8 : LABEL Description "This Dockerfile is used to build a scikit-learn’s decision tree image"
-	 ---> Running in e8000ae57a7d
-	 ---> d872e29971e3
-	Removing intermediate container e8000ae57a7d
-	Step 4/8 : WORKDIR /app
-	 ---> 083eb3e4fb16
-	Removing intermediate container c965871286f9
-	Step 5/8 : ADD . /app
-	 ---> 82b1dbdbe759
-	Step 6/8 : RUN pip install -r requirements.txt
-	 ---> Running in 3c82f7d5dd95
+	Step 1/9 : FROM python:3.6-slim
+	 ---> d6f22b3a2b87
+	Step 2/9 : MAINTAINER Upendra Devisetty <upendra@cyverse.org>
+	 ---> Using cache
+	 ---> 8d982fba864a
+	Step 3/9 : LABEL Description "This Dockerfile is used to build a scikit-learn’s decision tree image"
+	 ---> Using cache
+	 ---> ae0dccaf9b93
+	Step 4/9 : WORKDIR /app
+	 ---> Using cache
+	 ---> b46cacae725d
+	Step 5/9 : COPY requirements.txt .
+	 ---> ff17cc37aef5
+	Step 6/9 : RUN pip install -r requirements.txt
+	 ---> Running in ddc3a12aef09
 	Collecting numpy (from -r requirements.txt (line 1))
-	  Downloading numpy-1.14.0-cp36-cp36m-manylinux1_x86_64.whl (17.2MB)
+	  Downloading https://files.pythonhosted.org/packages/71/90/ca61e203e0080a8cef7ac21eca199829fa8d997f7c4da3e985b49d0a107d/numpy-1.14.3-cp36-cp36m-manylinux1_x86_64.whl (12.2MB)
 	Collecting scipy (from -r requirements.txt (line 2))
-	  Downloading scipy-1.0.0-cp36-cp36m-manylinux1_x86_64.whl (50.0MB)
+	  Downloading https://files.pythonhosted.org/packages/a8/0b/f163da98d3a01b3e0ef1cab8dd2123c34aee2bafbb1c5bffa354cc8a1730/scipy-1.1.0-cp36-cp36m-manylinux1_x86_64.whl (31.2MB)
 	Collecting scikit-learn (from -r requirements.txt (line 3))
-	  Downloading scikit_learn-0.19.1-cp36-cp36m-manylinux1_x86_64.whl (12.4MB)
+	  Downloading https://files.pythonhosted.org/packages/3d/2d/9fbc7baa5f44bc9e88ffb7ed32721b879bfa416573e85031e16f52569bc9/scikit_learn-0.19.1-cp36-cp36m-manylinux1_x86_64.whl (12.4MB)
 	Installing collected packages: numpy, scipy, scikit-learn
-	Successfully installed numpy-1.14.0 scikit-learn-0.19.1 scipy-1.0.0
-	 ---> 3d402c23203f
-	Removing intermediate container 3c82f7d5dd95
-	Step 7/8 : ENV NAME World
-	 ---> Running in d0468b521e81
-	 ---> 9cd31e8e7c95
-	Removing intermediate container d0468b521e81
-	Step 8/8 : CMD python app.py
-	 ---> Running in 051bd2235697
-	 ---> 36bb4c3d9183
-	Removing intermediate container 051bd2235697
-	Successfully built 36bb4c3d9183
-	Successfully tagged scikitdocker_datasci:latest
+	Successfully installed numpy-1.14.3 scikit-learn-0.19.1 scipy-1.1.0
+	Removing intermediate container ddc3a12aef09
+	 ---> 32a87ce4f2d7
+	Step 7/9 : COPY app.py .
+	 ---> c6f08f9c5e79
+	Step 8/9 : WORKDIR /
+	Removing intermediate container 3064555533fc
+	 ---> 5578405cfa7c
+	Step 9/9 : CMD ["python", "/app/app.py"]
+	 ---> Running in 8639b7e364d4
+	Removing intermediate container 8639b7e364d4
+	 ---> 04cde6579bb7
+	Successfully built 04cde6579bb7
+	Successfully tagged scikit_docker_datasci:latest
 	WARNING: Image for service datasci was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
-	Creating scikitdocker_datasci_1 ... 
-	Creating scikitdocker_datasci_1 ... done
-	Attaching to scikitdocker_datasci_1
-	scikitdocker_datasci_1 exited with code 0
+	Creating scikit_docker_datasci_1 ... done
+	Attaching to scikit_docker_datasci_1
+	datasci_1  | Prediction of DecisionTreeClassifier:
+	datasci_1  | ['apple' 'orange' 'apple']
+	scikit_docker_datasci_1 exited with code 0
 
 Use ``docker-compose rm`` to remove the container after docker-compose finish running
 
 .. code-block:: bash
 
-	docker-compose rm 
+	$ docker-compose rm 
 	Going to remove scikitdocker_datasci_1
 	Are you sure? [yN] y
 	Removing scikitdocker_datasci_1 ... done
-
-You will find the ouput file in the ``scikit_docker`` folder with the following contents
-
-.. code-block:: bash
-
-	$ cat output.txt 
-	Prediction of DecisionTreeClassifier:['apple' 'orange' 'apple']
-
 
 4. Docker Compose for multi container apps
 ==========================================
@@ -691,6 +829,6 @@ And that’s it! You should be able to see the Flask application running on ``ht
 
 .. image:: ../img/dc-1.png
   :width: 550
-  :height: 500
+  :height: 200
   :scale: 100%
   :align: center
