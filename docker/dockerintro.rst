@@ -471,7 +471,7 @@ Now, put it all together to tag the image. Run docker tag image with your userna
 
 .. code-block:: bash
 
-	$ docker tag debian/astroml:1.0 <dockerhub username>/fortunecowsaylolcat2:1.0
+	$ docker tag ubuntu/fortunecowsaylolcat2:1.0 <dockerhub username>/fortunecowsaylolcat2:1.0
 
 5.1.3 Publish the image
 ^^^^^^^^^^^^^^^^^^^^^^^
