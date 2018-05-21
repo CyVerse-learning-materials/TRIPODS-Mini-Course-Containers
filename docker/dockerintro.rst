@@ -1,9 +1,9 @@
 **Introduction to Docker**
 --------------------------
 
-.. image:: ../img/docker.png
-  :width: 200
-  :height: 200
+.. image:: ../img/docker.jpg
+  :width: 150
+  :height: 150
 
 This is the introductory session of Docker. The topics include Docker installation, running prebuilt Docker containers, managing data in Docker, and exposing container ports. This session gets you ready to run most of the existing Docker containers.
 
@@ -21,18 +21,14 @@ The getting started guide on Docker has detailed instructions for setting up Doc
 
 .. Note::
 
-	If you're using Docker for Windows make sure you have `shared your drive <https://docs.docker.com/docker-for-windows/#shared-drives>`_.
-
-	If you're using an older version of Windows or MacOS you may need to use `Docker Machine <https://docs.docker.com/machine/overview/>`_ instead.
-
-	All commands work in either bash or Powershell on Windows.
+	If you're using an older version of Windows or MacOS you may need to use `Docker Machine <https://docs.docker.com/machine/overview/>`_ instead. All commands work in either bash or Powershell on Windows.
 
 Once you are done installing Docker, test your Docker installation by running the following command to make sure you are using version 1.13 or higher:
 
 .. code-block:: bash
 
 	$ docker --version
-	Docker version 17.09.0-ce, build afdb6d4
+	Docker version 18.03.1-ce, build 9ee9f40 # This is the version on my computer
 
 When run without ``--version`` you should see a whole bunch of lines showing the different options available with ``docker``. Alternatively you can test your installation by running the following:
 
@@ -56,33 +52,40 @@ When run without ``--version`` you should see a whole bunch of lines showing the
 	    executable that produces the output you are currently reading.
 	 4. The Docker daemon streamed that output to the Docker client, which sent it
 	    to your terminal.
-	.......
+
+	To try something more ambitious, you can run an Ubuntu container with:
+ 	$ docker run -it ubuntu bash
+
+	Share images, automate workflows, and more with a free Docker ID:
+ 	https://hub.docker.com/
+
+	For more examples and ideas, visit:
+ 	https://docs.docker.com/engine/userguide/   
 
 .. Note::
 
-	Depending on how you've installed Docker on your system, you might see a ``permission denied`` error after running the above command. If you're on Linux, you may need to prefix your Docker commands with sudo. Alternatively to run docker command without sudo, you need to add your user (who has root privileges) to docker group.
-	For this run:
+	Depending on how you've installed Docker on your system, you might see a ``permission denied`` error after running the above command. If you're on Linux, you may need to prefix your Docker commands with `sudo`. Alternatively to run docker command without `sudo`, you need to add your user (who has root privileges) to docker group. For this run:
 
-	Create the docker group::
+	1. Create the docker group::
 
 		$ sudo groupadd docker
+	
+	2. Add your user to the docker group::
 
-	Add your user to the docker group::
-
-		$ sudo usermod -aG docker $USER
-
-	Log out and log back in so that your group membership is re-evaluated
+		$ sudo usermod -aG docker ${USER}
+	
+	3. Log out and log back in so that your group membership is re-evaluated
 
 3. Running Docker containers
 ============================
 
 Now that you have everything setup, it's time to get our hands dirty. In this section, you are going to run a container from `Alpine Linux <http://www.alpinelinux.org/>`_ (a lightweight linux distribution) image on your system and get a taste of the ``docker run`` command.
 
-But wait, what exactly is a container and image?
+But wait, what exactly is a Container and Image?
 
-**Containers** - Running instances of Docker images - containers run the actual applications. A container includes an application and all of its dependencies. It shares the kernel with other containers, and runs as an isolated process in user space on the host OS.
+**Containers** - Running instances of Docker images. Containers run the actual applications. A container includes an application and all of its dependencies. It shares the kernel with other containers, and runs as an isolated process in user space on the host OS.
 
-**Images** - The file system and configuration of our application which are used to create containers. To find out more about a Docker image, run ``docker inspect hello-world`` and ``docker history hello-world``. In the demo above, you could have used the ``docker pull`` command to download the ``hello-world`` image. However when you executed the command ``docker run hello-world``, it also did a ``docker pull`` behind the scenes to download the ``hello-world`` image with ``latest`` tag (we will learn more about tags little later).
+**Images** - The file system and configuration of our application which are used to create containers. To find out more about a Docker image, run ``docker inspect hello-world`` and ``docker history hello-world``.
 
 Now that we know what a container and image is, let's run the following command in our terminal:
 
@@ -174,7 +177,7 @@ Exit out of the container by giving the ``exit`` command.
 		CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS                          PORTS                    NAMES
 		de4bbc3eeaec        alpine                "/bin/sh"                3 minutes ago       Exited (0) About a minute ago                            pensive_leavitt
 
-	If you want to keep the container active, then you can use keys ``Ctrl-p, Ctrl-q``. To make sure that it is not exited run the same ``docker ps -a`` command again::
+	If you want to keep the container active, then you can use keys ``Ctrl+p, Ctrl+q``. To make sure that it is not exited run the same ``docker ps -a`` command again::
 
 		$ docker ps -l
 		CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS                         PORTS                    NAMES
@@ -184,171 +187,322 @@ Exit out of the container by giving the ``exit`` command.
 
 		$ docker attach 0db38ea51a48
 
-4. Managing data in Docker
-==========================
+4. Building Docker images
+=========================
 
-From the above examples, we learned that a running Docker container is an isolated environment created from an Docker image.  This means, although it is possible to store data within the "writable layer" of a container, there are some limitations:
+So far you have been running, containers from existing Docker images. But how do you build one? One area where Docker shines is when you need to use a command line utility that has a large number of dependencies.
 
-- The data doesn't persist when that container is no longer running, and it can be difficult to get the data out of the container if another process needs it.
+In this session, let's dive deeper into what Docker images are. Later on we will build our own image and use that image to run an application locally.
 
-- A container's writable layer is tightly coupled to the host machine where the container is running. You can't easily move the data somewhere else.
+4.1 Docker images
+~~~~~~~~~~~~~~~~~
 
-Docker offers three different ways to mount data into a container from the Docker host: **volumes**, **bind mounts**, or **tmpfs volumes**. For simplicity, we will only discuss bind mounts here, even though volumes is the more powerful and usable option for most use cases.
-
-4.1 Bind mounts
-~~~~~~~~~~~~~~~
-
-**Bind mounts:** When you use a bind mount, a file or directory on the host machine is mounted into a container.
-
-.. image:: ../img/bind_mount.png
-  :width: 500
-  :height: 450
-  :scale: 100%
-  :align: center
-
-.. Warning::
-
-	One side effect of using bind mounts, for better or for worse, is that you can change the host filesystem via processes running in a container, including creating, modifying, or deleting important system files or directories. This is a powerful ability which can have security implications, including impacting non-Docker processes on the host system.
-
-	If you use ``--mount`` to bind-mount a file or directory that does not yet exist on the Docker host, Docker does not automatically create it for you, but generates an error.
-
-4.1.1 Start a container with a bind mount
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Let's clone a git repository to obtain our data sets:
+Docker images are the basis of containers. In the previous example, you pulled the ``hello-world`` image from the registry and asked the Docker client to run a container based on that image. To see the list of images that are available locally on your system, run the ``docker images`` command.
 
 .. code-block:: bash
 
-	$ git clone git@github.com:AstroContainers/2018-05-examples.git
+	$ docker images
+	REPOSITORY     TAG       IMAGE ID        CREATED           SIZE
+	hello-world    latest    690ed74de00f    5 months ago      960 B
+	alpine         latest    3fd9065eaf02    3 months ago      4.15MB
+	.........
 
-We can then ``cd`` into the HOPS work directory, and mount it to ``/root`` as we launch the ``eventhorizontelescope/hops`` container:
+Above is a list of images that I've pulled from the registry and those I've created myself (we'll shortly see how). You will have a different list of images on your machine. The **TAG** refers to a particular snapshot of the image and the **ID** is the corresponding unique identifier for that image.
 
-.. code-block:: bash
+For simplicity, you can think of an image akin to a git repository - images can be committed with changes and have multiple versions. When you do not provide a specific version number, the client defaults to latest.
 
-	$ cd 2018-05-examples/hops
-	$ ls
-	1234
-	$ docker run -it --rm --name hops -v $PWD:/root eventhorizontelescope/hops
-	Setup HOPS v3.19 with HOPS_ROOT=/root for x86_64-3.19
-
-You will start at the ``/root`` work directory and the host data ``1234`` is available in it:
+For example you could pull a specific version of ubuntu image as follows:
 
 .. code-block:: bash
 
-	$ pwd
-	/root
-	$ ls
-	1234
+	$ docker pull ubuntu:16.04
 
-You can open another terminal and use ``docker inspect hops | grep -A9 Mounts`` to verify that the bind mount was created correctly. Look for the "Mounts" section
+If you do not specify the version number of the image, as mentioned, the Docker client will default to a version named ``latest``.
 
-.. code-block:: bash
-
-	$ docker inspect hops | grep -A9 Mounts
-        "Mounts": [
-            {
-                "Type": "bind",
-                "Source": "/Users/ckchan/2018-05-examples/hops",
-                "Destination": "/root",
-                "Mode": "",
-                "RW": true,
-                "Propagation": "rprivate"
-            }
-        ],
-
-This shows that the mount is a bind mount, it shows the correct source and target, it shows that the mount is read-write, and that the propagation is set to rprivate.
-
-Use case 1: Processing VLBI data with HOPS in Docker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-HOPS stands for the Haystack Observatory Postprocessing System.  It is a standard tool used in Very-long-baseline interferometry (VLBI) to perform data analysis. HOPS has a long history and it depends on legacy libraries. This makes it difficult to compile HOPS on modern Unix/Linux systems. Nevertheless, the Docker, you **have** already launched a HOPS envirnment that you can analysis VLBI data!
-
-The most basic step in analysis VLBI is called "fringe fitting", which we will perform in the running HOPS container by
+So for example, the ``docker pull`` command given below will pull an image named ``ubuntu:latest``
 
 .. code-block:: bash
 
-	$ ls 1234/No0055/
-	3C279.zxxerd  L..zxxerd  LL..zxxerd  LW..zxxerd  W..zxxerd  WW..zxxerd
-	$ fourfit 1234
-	fourfit: Warning: No valid data for this pass for pol 2
-	fourfit: Warning: No valid data for this pass for pol 3
-	$ ls 1234/No0055/
-	3C279.zxxerd  LL..zxxerd     LL.B.2.zxxerd  LW.B.3.zxxerd  W..zxxerd   WW.B.5.zxxerd
-	L..zxxerd     LL.B.1.zxxerd  LW..zxxerd     LW.B.4.zxxerd  WW..zxxerd
+	$ docker pull ubuntu
 
-``fourfit`` reads in the correlated data and create the so called "fringe files". The warnings are normal because there are missing polarizations in the data. In order to see the result of the fringe fitting, you can use ``fplot``:
+To get a new Docker image you can either get it from a registry (such as the Docker hub) or create your own. There are hundreds of thousands of images available on Docker hub. 
 
-.. code-block:: bash
+An important distinction with regard to images is between base images and child images and official images and user images (Both of which can be base images or child images.).
 
-	$ fplot -d %04d.ps 1234
-	$ ls
-	0000.ps  0001.ps  0002.ps  0003.ps  0004.ps  1234
+.. important::
+	**Base images** are images that have no parent images, usually images with an OS like ubuntu, alpine or debian.
 
-You just created 4 fringe plots which contain all important information of the VLBI experiment!  Now you can exit your HOPS container and open them on your host machine.
+	**Child images** are images that build on base images and add additional functionality.
 
-5. Exposing container ports
-===========================
+	**Official images** are Docker sanctioned images. Docker, Inc. sponsors a dedicated team that is responsible for reviewing and publishing all Official Repositories content. This team works in collaboration with upstream software maintainers, security experts, and the broader Docker community. These are not prefixed by an organization or user name. In the list of images above, the python, node, alpine and nginx images are official (base) images. To find out more about them, check out the Official Images Documentation.
 
-Mounting a host directory is one way to make a container connect with the outside work. Another possible is through network by exposing a port.
+	**User images** are images created and shared by users like you. They build on base images and add additional functionality. Typically these are formatted as ``user/image-name``. The user value in the image name is your Dockerhub user or organization name.
 
-Use case 2: Processing Galaxy Simulation with Jupyter in Docker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4.2 Building custom Docker images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In this second use case, we will use Docker to run a "ready to go" Jupyter notebook in a container.  We will expose the port 8888 from the container to the localhost so that you can connect to the notebook.
+4.2.1 Using docker commit (not recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Inside the ``2018-05-examples`` git repository that you downloaded earlier, there is a sample Galaxy simulation:
+As we saw in the Docker introduction, the general Docker workflow is:
+
+- start a container based on an image in a known state
+- add things to the filesystem, such as packages, codebases, libraries, files, or anything else
+- commit the changes as layers to make a new image
+
+Let's follow this workflow to built a custom image. Instead of `alpine` this time we will use `ubuntu` linux image to install some interesting packages
+
+As before first either pull the `ubuntu` docker image or you can just `docker run -it ubuntu` to pull and run the container interactively
 
 .. code-block :: bash
 
-	$ pwd
-	/Users/ckchan/2018-05-examples/hops
-	$ cd ../galaxy/
-	$ pwd
-	/Users/ckchan/2018-05-examples/galaxy
+	$ docker run -it ubuntu:16.04
+	Unable to find image 'ubuntu:16.04' locally
+	16.04: Pulling from library/ubuntu
+	Digest: sha256:9ee3b83bcaa383e5e3b657f042f4034c92cdd50c03f73166c145c9ceaea9ba7c
+	Status: Downloaded newer image for ubuntu:16.04
+	root@7f989e4174aa:/#
 
-	# Specify the uid of the jovyan user. Useful to mount host volumes with specific file ownership. For this option to take effect, you must run the container with --user root
+Let's install two packages `fortune`, `cowsay`, `lolcat` inside the container. But before that it's alway good idea to update the packages that are already existing in the ubuntu using `apt-get update` command.
 
-	$ docker run -it --rm -v $PWD:/home/jovyan/work -p 8888:8888 -e NB_UID=$(id -u) --user root astrocontainers/jupyter
-	Set username to: jovyan
-	usermod: no changes
-	Set jovyan UID to: 1329
-	Executing the command: jupyter notebook
-	[I 23:36:09.446 NotebookApp] Writing notebook server cookie secret to /home/jovyan/.local/share/jupyter/runtime/notebook_cookie_secret
-	[W 23:36:09.686 NotebookApp] WARNING: The notebook server is listening on all IP addresses and not using encryption. This is not recommended.
-	[I 23:36:09.722 NotebookApp] JupyterLab beta preview extension loaded from /opt/conda/lib/python3.6/site-packages/jupyterlab
-	[I 23:36:09.722 NotebookApp] JupyterLab application directory is /opt/conda/share/jupyter/lab
-	[I 23:36:09.730 NotebookApp] Serving notebooks from local directory: /home/jovyan
-	[I 23:36:09.730 NotebookApp] 0 active kernels
-	[I 23:36:09.730 NotebookApp] The Jupyter Notebook is running at:
-	[I 23:36:09.730 NotebookApp] http://[all ip addresses on your system]:8888/?token=a81dbeec92b286df393bb484fdf53efffab410fd64ec8702
-	[I 23:36:09.730 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-	[C 23:36:09.731 NotebookApp]
-	Copy/paste this URL into your browser when you connect for the first time,
-    to login with a token:
-    	http://localhost:8888/?token=dfb50de6c1da091fd62336ac52cdb88de5fe339eb0faf478
+.. code-block :: bash
 
-The last line is a URL that we need to copy and paste into our browser to access our new Jupyter Notebook:
+	root@7f989e4174aa:/# apt-get update
+	root@7f989e4174aa:/# apt-get install -y fortune cowsay lolcat
+
+Now exit the container and run `docker ps -a` to check to see if the status of the container (which is exit in this case)
+
+.. code-block :: bash
+
+	 root@7f989e4174aa:/# exit
+
+Go ahead and commit the changes and create a new image.
+
+.. code-block :: bash
+
+	docker commit -m "Installed fortune cowsay lolcat" 7f989e4174aa ubuntu/fortunecowsaylolcat
+	sha256:77ae42b823e60c2a350228d892aacda337e1e01c19c3ae72da104f7f4a77f83f
+
+Congratulatios. You created your fist Docker image. Check to see your docker image in the list of images using `docker images`. Let's run a container using that newly created docker image
+
+.. code-block :: bash
+
+	$ docker run ubuntu/fortunecowsaylolcat /usr/games/cowsay "Hi"
+	 ____
+	< Hi >
+	 ----
+	        \   ^__^
+	         \  (oo)\_______
+	            (__)\       )\/\
+	                ||----w |
+	                ||     ||
+
+and another one
+
+.. code-block :: bash
+
+	$ docker run ubuntu/fortunecowsay /usr/games/fortune
+	It's all in the mind, ya know.
+
+Pretty cool isn't it.. 
+
+**Exercise**: Can you figure out a way to combine these two commands in this order `fortune`, `cowsay` and `lolcat` to print what cowsay of the fortune output?
+
+**Hint**: Use pipe and use interactive terminal
+
+4.2.2 Using Dockerfile (recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As you noticed by now that this method of making images is not reproducible. For example if you share this image with someone (we will see how it is done later), then they wouldn't know what is installed in this image. Ofcourse you can provide them with your notes but still it's not reproducible. Rather than just running commands and installing commands using `apt-get install`, we'll put our instructions in a special file called the Dockerfile
+
+What exactly is a Dockerfile? 
+
+A `Dockerfile <https://docs.docker.com/engine/reference/builder/>`_ is a text document that contains all the commands a user could call on the command line to assemble an image. Using `docker build` users can create an automated build that executes several command-line instructions in succession. Let's create a Dockerfile for the above image
+
+Open up a text editor of your choice and type in the following commands and save it as `Dockerfile` 
+
+.. Tip ::
+
+	You can name your Dockerfile as anything but according to best practices it is recommended to name it as `Dockerfile` for reasons we will see later
+
+.. code-block :: bash
+
+	FROM ubuntu:16.04
+	MAINTAINER Upendra Devisetty <upendra@cyverse.org>
+	LABEL version="1.0" description="This Dockerfile is for building fortune cowsay lolcat ubuntu image"
+	RUN apt-get update
+	RUN apt-get install -y fortune cowsay lolcat
+
+	ENV PATH=/usr/games/:$PATH
+	CMD fortune | cowsay | lolcat
+
+That's it. Now building the Docker image using `docker build` command as below. The ``docker build command`` is quite simple - it takes an optional tag name with the ``-t`` flag, and the location of the directory containing the Dockerfile - the ``.`` indicates the current directory:
+
+.. code-block :: bash
+
+	docker build -t ubuntu/fortunecowsaylolcat2 .
+	Sending build context to Docker daemon  2.048kB
+	Step 1/5 : FROM ubuntu:16.04
+	 ---> c9d990395902
+	Step 2/5 : MAINTAINER Upendra Devisetty <upendra@cyverse.org>
+	 ---> Running in a365c28eb283
+	Removing intermediate container a365c28eb283
+	 ---> 91d18ff89d44
+	Step 3/5 : LABEL Description "This Dockerfile is for building fortune coway ubuntu image"
+	 ---> Running in d24ff4a347fa
+	Removing intermediate container d24ff4a347fa
+	 ---> 73daa1277fea
+	Step 4/5 : RUN apt-get update
+	 ---> Running in eed1e2fe25de
+	 ..........
+	 ..........
+	 Successfully built ffe89a681d5c
+	Successfully tagged ubuntu/fortunecowsaylolcat2:latest
+
+Great! We successfully built a Docker image using Dockerfile. Let's test it out by launching a container using `docker run`. 
+
+.. code-block :: bash
+
+	$ docker run -it --rm ubuntu/fortunecowsaylolcat2:1.0 
+ 	_________________________________________
+	/ FORTUNE PROVIDES QUESTIONS FOR THE      \
+	| GREAT ANSWERS: #5 A: The Halls of       |
+	| Montezuma and the Shores of Tripoli. Q: |
+	| Name two families whose kids won't join |
+	\ the Marines.                            /
+	 -----------------------------------------
+	        \   ^__^
+	         \  (oo)\_______
+	            (__)\       )\/\
+	                ||----w |
+	                ||     ||
+
+.. Tip ::
+
+	If you have noticed, I am running `docker run` with an extra flag `--rm`. This flag is quite useful and it removes the container after the container exits. So you don't have to manually remove them
+
+Superb! So you have build a Docker image using Dockerfile. See how easy it is and it is also reproducible since you know how it is built. In addition, you can version control (using git or others) this Dockerfile (which we will see in a minute)
+
+Before we go further, let's look at what those commands in Dockerfile mean
+
+**FROM**
+
+This instruction is used to set the base image for subsequent instructions. It is mandatory to set this in the first line of a Dockerfile. You can use it any number of times though.
+
+**MAINTAINER**
+
+This is a non-executable instruction used to indicate the author of the Dockerfile.
+
+**LABEL**
+
+You can assign metadata in the form of key-value pairs to the image using this instruction. It is important to notice that each LABEL instruction creates a new layer in the image, so it is best to use as few LABEL instructions as possible
+
+**RUN**
+
+This instruction lets you execute a command on top of an existing layer and create a new layer with the results of command execution
+
+**CMD** 
+
+This defines the commands that will run on the Image at start-up. Unlike a **RUN**, this does not create a new layer for the Image, but simply runs the command. There can only be one CMD per a Dockerfile/Image. If you need to run multiple commands, the best way to do that is to have the CMD run a script. CMD requires that you tell it where to run the command, unlike RUN.
+
+**ENV**
+
+This defines Environmental variables (one or more) in the Docker image
+
+**WORKDIR**
+
+The WORKDIR directive is used to set where the command defined with CMD is to be executed.
+
+**ENTRYPOINT** 
+
+This argument sets the concrete default application that is used every time a container is created using the image. For example, if you have installed a specific application inside an image and you will use this image to only run that application, you can state it with ENTRYPOINT and whenever a container is created from that image, your application will be the target
+
+5. Docker registries
+====================
+
+To demonstrate the portability of what we just created, let’s upload our built Docker image and run it somewhere else (CyVerse Atmosphere cloud or Discovery Environment). After all, you’ll need to learn how to push to registries when you want to deploy containers to production.
+
+.. important::
+
+	So what exactly is a registry?
+
+	A registry is a collection of repositories, and a repository is a collection of images—sort of like a GitHub repository, except the code is already built. An account on a registry can create many repositories. The docker CLI uses Docker’s public registry by default. You can even set up your own private registry using Docker Trusted Registry
+
+There are several things you can do with Docker registries:
+
+- Pushing images
+- Finding images
+- Pulling images
+- Sharing images
+
+5.1 Public repositories
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Some example of public registries include `Docker cloud <https://cloud.docker.com/>`_, `Docker hub <https://hub.docker.com/>`_ and `quay.io <https://quay.io/>`_ etc.,
+
+5.1.1 Log in with your Docker ID
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that you've created and tested your image, you can push it to Docker cloud or Docker hub.
+
+.. Note::
+
+	If you don’t have a Docker account, sign up for one at `Docker cloud <https://cloud.docker.com/>`_ or `Docker hub <https://hub.docker.com/>`_. Make note of your username. There are several advantages of registering to Dockerhub which we will see later on in the session
+
+First you have to login to your Docker hub account. To do that:
 
 .. code-block:: bash
 
-	http://localhost:8888/?token=dfb50de6c1da091fd62336ac52cdb88de5fe339eb0faf478
+	$ docker login -u <dockerhub username> 
+	Password: 
 
-.. warning::
+Enter you Password when prompted.
 
-	Do not copy and paste the above URL in your browser as this URL is specific to my environment and it doesn't work for you.
+5.1.2 Tag the image
+^^^^^^^^^^^^^^^^^^^
 
-.. image:: ../img/jn_login.png
-  :width: 700
-  :height: 450
-  :scale: 100%
-  :align: center
+The notation for associating a local image with a repository on a registry is ``username/repository:tag``. The tag is optional, but recommended, since it is the mechanism that registries use to give Docker images a version. Give the repository and tag meaningful names for the context, such as ``get-started:part2``. This will put the image in the ``get-started`` repository and tag it as ``part2``.
 
-Once you've done that you should be greeted by your very own containerised Jupyter service! Now open ``work/InClassLab7_Template_wSolutions.ipynb`` and try analysis a Galaxy simulation!
+.. Note::
 
-.. image:: ../img/jn_galaxy.png
-  :width: 700
-  :height: 700
-  :scale: 100%
-  :align: center
+	By default the docker image gets a ``latest`` tag if you don't provide one. Thought convenient, it is not recommended for reproducibility purposes.
 
-To shut down the container once you're done working, simply hit ``Ctrl-C`` in the terminal/command prompt. Your work will all be saved on your actual machine in the path we set in our Docker compose file. And there you have it — a quick and easy way to start using Jupyter notebooks with the magic of Docker.
+Now, put it all together to tag the image. Run docker tag image with your username, repository, and tag names so that the image will upload to your desired destination. For our docker image since we already have our Dockerhub username we will just add tag which in this case is ``1.0``
+
+.. code-block:: bash
+
+	$ docker tag debian/astroml:1.0 <dockerhub username>/fortunecowsaylolcat2:1.0
+
+5.1.3 Publish the image
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Upload your tagged image to the Dockerhub repository
+
+.. code-block:: bash
+
+	$ docker push <dockerhub username>/fortunecowsaylolcat2:1.0
+
+Once complete, the results of this upload are publicly available. If you log in to Docker Hub, you will see the new image there, with its pull command.
+
+Congrats! You just made your first Docker image and shared it with the world!
+
+5.1.4 Pull and run the image from the remote repository
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let's try to run the image from the remote repository on Cloud server by logging into CyVerse Atmosphere, `launching an instance <../atmosphere/boot.html>`_. If you don't have access to CyVerse Atmosphere, you can use any cloud of your choice.
+
+First install Docker on Atmosphere using from here ``https://docs.docker.com/install/linux/docker-ce/ubuntu`` or alternatively you can use ``ezd`` command which is a short-cut command for installing Docker on Atmosphere
+
+.. code-block:: bash
+
+	$ ezd
+
+Now run the following command to run the docker image from Dockerhub
+
+.. code-block:: bash
+
+	$ docker run --rm upendradevisetty/fortunecowsaylolcat2:1.0
+
+.. Note::
+
+	You don't have to run ``docker pull`` since if the image isn’t available locally on the machine, Docker will pull it from the repository.

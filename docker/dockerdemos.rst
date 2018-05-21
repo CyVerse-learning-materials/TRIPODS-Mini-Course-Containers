@@ -1,6 +1,10 @@
 **Additional Docker Demo's**
 ----------------------------
 
+.. image:: ../img/docker.jpg
+  :width: 150
+  :height: 150
+
 1. Play-with-docker (PWD)
 ========================
 
