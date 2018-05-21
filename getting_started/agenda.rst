@@ -15,7 +15,7 @@ This workshop runs under a `Code of Conduct <../getting_started/main.html>`_. Pl
     * - 05/21/18 (Monday)
       - 01:30pm-01:45pm
       - Introduction to Tripods container camp and Container landscape and computation resources (Nirav Merchant)
-      - `Intro slides <https://bit.ly/2rYvwDz>`_
+      - `Intro slides <https://docs.google.com/presentation/d/1kU62ZOJkCPgIavhfKESuw3vmVsd6JWVcDHF6_XrjfIA/edit?usp=sharing>`_
     * -
       - 1:45pm-3:00pm
       - Introduction to Docker (Upendra Devisetty)
